@@ -28,7 +28,7 @@ jobs:
 
       - name: Deps
         run: |
-          opam pin add -n bonsai --unlock-base .
+          update && opam upgrade && opam install bonsai
           opam install -t --deps-only .
       - name: Build
         run: opam exec -- dune build
