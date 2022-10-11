@@ -1,0 +1,37 @@
+name: build
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  tests:
+    name: Tests
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+        ocaml-version:
+          - 4.09.0
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use OCaml ${{ matrix.ocaml-version }}
+        uses: avsm/setup-ocaml@v1
+        with:
+          ocaml-version: ${{ matrix.ocaml-version }}
+
+      - name: Deps
+        run: |
+          opam pin add -n bonsai .
+          opam install -t --deps-only .
+      - name: Build
+        run: opam exec -- dune build
+
+      - name: Test
+        run: opam exec -- dune runtest
